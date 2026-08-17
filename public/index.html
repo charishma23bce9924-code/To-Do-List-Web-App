@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TASKR — To-Do List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">TASKR</span>
+      <span class="tagline">stay sharp</span>
+    </div>
+    <div class="header-stats" id="headerStats">
+      <div class="stat-pill"><span id="statTotal">0</span> total</div>
+      <div class="stat-pill active"><span id="statActive">0</span> active</div>
+      <div class="stat-pill done"><span id="statDone">0</span> done</div>
+      <div class="stat-pill urgent"><span id="statHigh">0</span> urgent</div>
+    </div>
+  </header>
+
+  <!-- ── NOTIFICATION BANNER ── -->
+  <div id="notifBanner" class="notif-banner hidden">
+    <div class="notif-banner-left">
+      <span class="notif-icon">🔔</span>
+      <div class="notif-texts">
+        <span class="notif-title">Tasks need your attention</span>
+        <span class="notif-list" id="notifList"></span>
+      </div>
+    </div>
+    <div class="notif-banner-right">
+      <button class="btn-notif-allow" id="btnAllowNotif">Allow Desktop Alerts</button>
+      <button class="btn-notif-dismiss" id="btnDismissNotif">✕</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- ── ADD TASK FORM ── -->
+    <section class="add-section">
+      <div class="add-card">
+        <div class="add-header">
+          <h2>New Task</h2>
+          <button class="btn-expand" id="toggleExtra">+ more options</button>
+        </div>
+        <div class="add-body">
+          <div class="input-row">
+            <input type="text" id="titleInput" class="input-main" placeholder="What needs to be done?" maxlength="200" />
+            <button class="btn-add" id="addBtn">ADD</button>
+          </div>
+          <div class="extra-fields" id="extraFields">
+            <textarea id="descInput" class="input-desc" placeholder="Description (optional)" rows="2"></textarea>
+            <div class="field-row">
+              <div class="field-group">
+                <label>Priority</label>
+                <select id="prioritySelect" class="select-field">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Category</label>
+                <input type="text" id="categoryInput" class="input-field" placeholder="e.g. Work, Study..." />
+              </div>
+              <div class="field-group">
+                <label>Due Date</label>
+                <input type="date" id="dueDateInput" class="input-field" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FILTERS ── -->
+    <section class="filters-section">
+      <div class="filters-row">
+        <div class="filter-tabs">
+          <button class="tab active" data-filter="all">All</button>
+          <button class="tab" data-filter="active">Active</button>
+          <button class="tab" data-filter="completed">Completed</button>
+        </div>
+        <div class="filter-controls">
+          <select class="select-sm" id="priorityFilter">
+            <option value="">All Priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <div class="search-wrap">
+            <input type="text" id="searchInput" class="input-search" placeholder="Search..." />
+          </div>
+          <button class="btn-clear-done" id="clearDoneBtn" title="Delete all completed">Clear Done</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TODO LIST ── -->
+    <section class="list-section">
+      <div id="todoList" class="todo-list"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">◎</div>
+        <p>Nothing here yet.<br/>Add a task above to get started.</p>
+      </div>
+      <div id="loadingState" class="loading-state">
+        <div class="loader"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── EDIT MODAL ── -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Task</h3>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId" />
+        <div class="field-group full">
+          <label>Title</label>
+          <input type="text" id="editTitle" class="input-field" maxlength="200" />
+        </div>
+        <div class="field-group full">
+          <label>Description</label>
+          <textarea id="editDesc" class="input-desc" rows="3"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Priority</label>
+            <select id="editPriority" class="select-field">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Category</label>
+            <input type="text" id="editCategory" class="input-field" />
+          </div>
+          <div class="field-group">
+            <label>Due Date</label>
+            <input type="date" id="editDueDate" class="input-field" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="modalCancel">Cancel</button>
+        <button class="btn-save" id="modalSave">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
